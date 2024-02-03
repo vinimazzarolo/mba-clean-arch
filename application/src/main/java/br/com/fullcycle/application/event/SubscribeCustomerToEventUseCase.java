@@ -5,8 +5,7 @@ import br.com.fullcycle.domain.customer.CustomerId;
 import br.com.fullcycle.domain.customer.CustomerRepository;
 import br.com.fullcycle.domain.event.EventId;
 import br.com.fullcycle.domain.event.EventRepository;
-import br.com.fullcycle.domain.event.ticket.Ticket;
-import br.com.fullcycle.domain.event.ticket.TicketRepository;
+import br.com.fullcycle.domain.event.EventTicket;
 import br.com.fullcycle.domain.exceptions.ValidationException;
 
 import java.time.Instant;
@@ -16,12 +15,10 @@ public class SubscribeCustomerToEventUseCase extends UseCase<SubscribeCustomerTo
 
     private final CustomerRepository customerRepository;
     private final EventRepository eventRepository;
-    private final TicketRepository ticketRepository;
 
-    public SubscribeCustomerToEventUseCase(final EventRepository eventRepository, final CustomerRepository customerRepository, final TicketRepository ticketRepository) {
+    public SubscribeCustomerToEventUseCase(final EventRepository eventRepository, final CustomerRepository customerRepository) {
         this.eventRepository = Objects.requireNonNull(eventRepository);
         this.customerRepository = Objects.requireNonNull(customerRepository);
-        this.ticketRepository = Objects.requireNonNull(ticketRepository);
     }
 
     @Override
@@ -33,15 +30,14 @@ public class SubscribeCustomerToEventUseCase extends UseCase<SubscribeCustomerTo
                 .orElseThrow(() -> new ValidationException("Event not found"));
 
 
-        final Ticket ticket = event.reserveTicket(customer.customerId());
+        final EventTicket ticket = event.reserveTicket(customer.customerId());
 
-        ticketRepository.create(ticket);
         eventRepository.update(event);
 
-        return new Output(event.eventId().value(), ticket.ticketId().value(), ticket.status().name(), ticket.reserverdAt());
+        return new Output(event.eventId().value(), ticket.eventTicketId().value(), Instant.now());
     }
 
     public record Input(String customerId, String eventId) {}
 
-    public record Output(String eventId, String ticketId, String ticketStatus, Instant reservationDate) {}
+    public record Output(String eventId, String eventTicketId, Instant reservationDate) {}
 }

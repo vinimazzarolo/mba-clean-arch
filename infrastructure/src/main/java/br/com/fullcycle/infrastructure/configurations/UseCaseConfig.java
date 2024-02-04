@@ -2,6 +2,7 @@ package br.com.fullcycle.infrastructure.configurations;
 
 import br.com.fullcycle.application.customer.CreateCustomerUseCase;
 import br.com.fullcycle.application.customer.GetCustomerByIdUseCase;
+import br.com.fullcycle.application.ticket.CreateTicketForCustomerUseCase;
 import br.com.fullcycle.domain.customer.CustomerRepository;
 import br.com.fullcycle.domain.event.EventRepository;
 import br.com.fullcycle.domain.partner.PartnerRepository;
@@ -21,6 +22,7 @@ public class UseCaseConfig {
     private final CustomerRepository customerRepository;
     private final EventRepository eventRepository;
     private final PartnerRepository partnerRepository;
+    private final TicketRepository ticketRepository;
 
     public UseCaseConfig(
             CustomerRepository customerRepository,
@@ -31,6 +33,7 @@ public class UseCaseConfig {
         this.customerRepository = Objects.requireNonNull(customerRepository);
         this.eventRepository = Objects.requireNonNull(eventRepository);
         this.partnerRepository = Objects.requireNonNull(partnerRepository);
+        this.ticketRepository = Objects.requireNonNull(ticketRepository);
     }
 
     @Bean
@@ -61,5 +64,10 @@ public class UseCaseConfig {
     @Bean
     public SubscribeCustomerToEventUseCase subscribeCustomerToEventUseCase() {
         return new SubscribeCustomerToEventUseCase(eventRepository,  customerRepository);
+    }
+
+    @Bean
+    public CreateTicketForCustomerUseCase createTicketForCustomerUseCase() {
+        return new CreateTicketForCustomerUseCase(ticketRepository);
     }
 }
